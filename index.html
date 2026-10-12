@@ -87,7 +87,9 @@ button:disabled{opacity:.55;cursor:default}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}
 .ph .t{position:absolute;left:0;right:0;bottom:0;font-family:var(--f-mono);font-size:.68rem;color:#fff;background:rgba(0,0,0,.55);padding:2px 5px}
 .ph button{position:absolute;top:4px;right:4px;width:26px;height:26px;padding:0;border-radius:99px;background:rgba(0,0,0,.6);color:#fff;border:0;font-size:15px;line-height:26px}
-.addPh{aspect-ratio:1;border:1.5px dashed var(--line);border-radius:8px;display:grid;place-items:center;text-align:center;color:var(--accent);font-weight:700;font-size:.85rem;cursor:pointer;padding:6px;background:var(--bg)}
+.addPh{aspect-ratio:1;border:1.5px dashed var(--line);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;color:var(--accent);font-weight:700;font-size:.8rem;line-height:1.15;cursor:pointer;padding:6px;background:var(--bg)}
+.addPh:active{background:var(--accent-soft)}
+.addPh:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 .addPh input{display:none}
 .areaFoot{display:flex;justify-content:flex-end}
 .note{font-size:.88rem;color:var(--muted)}
@@ -287,12 +289,12 @@ function areaCard(a, ph){
     <div class="chips" role="radiogroup" aria-label="Condition">${RATE[ph].map(([v,l,c])=>`<label class="chip"><input type="radio" name="${name}" value="${v}" ${d.rating===v?"checked":""}><span class="${c}">${l}</span></label>`).join("")}</div>
     ${ph==="after"?`<div class="tasks">${a.taskList.map((t,i)=>`<label class="tick"><input type="checkbox" data-t="${i}" ${d.tasks[i]?"checked":""}><span>${esc(t)}</span></label>`).join("")}</div>`:""}
     <div class="photos">${d.photos.map(p=>`<div class="ph"><img src="${p.src}" alt="${esc(a.name)} photo"><span class="t">${hhmm(p.taken)}</span><button type="button" data-del="${p.id}" aria-label="Remove photo">×</button></div>`).join("")}
-      <label class="addPh">+ Add photo<input type="file" accept="image/*" multiple></label></div>
+      <label class="addPh"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Take photo</span><input type="file" accept="image/*" capture="environment" data-src="camera"></label><label class="addPh"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg><span>From photos</span><input type="file" accept="image/*" multiple data-src="library"></label></div>
     <label class="f" style="font-weight:400"><textarea placeholder="${ph==="before"?"What did it look like? (optional)":"Notes (optional)"}">${esc(d.notes)}</textarea></label>
     ${ph==="before"?`<div class="areaFoot"><button type="button" class="small ghost" data-rm>Remove area</button></div>`:""}`;
   el.querySelectorAll('input[type=radio]').forEach(r=>r.onchange=()=>{ d.rating=r.value; save(); renderSummary(); });
   el.querySelectorAll('input[data-t]').forEach(c=>c.onchange=()=>{ d.tasks[c.dataset.t]=c.checked; save(); });
-  el.querySelector('input[type=file]').onchange=e=>{ addPhotos(a,ph,e.target.files); e.target.value=""; };
+  el.querySelectorAll('input[type=file]').forEach(inp=>inp.onchange=e=>{ addPhotos(a,ph,e.target.files); e.target.value=""; });
   el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ d.photos=d.photos.filter(p=>p.id!==b.dataset.del); save(); renderAreas(); renderSummary(); });
   el.querySelector('textarea').oninput=e=>{ d.notes=e.target.value; save(); };
   const rm=el.querySelector('[data-rm]');
